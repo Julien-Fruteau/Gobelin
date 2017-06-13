@@ -47,12 +47,20 @@ horrty_min_damage = 2
 horrty_max_damage = 5
 
 
-gobelins = {"Stinky": [stinky_hitpoints, stinky_min_damage,
-                       stinky_max_damage],
-            "Grunty": [grunty_hitpoints, grunty_min_damage,
-                       grunty_max_damage],
-            "Horrty": [horrty_hitpoints, horrty_min_damage,
-                       horrty_max_damage]}
+# gobelins = {"Stinky": [stinky_hitpoints, stinky_min_damage,
+#                        stinky_max_damage],
+#             "Grunty": [grunty_hitpoints, grunty_min_damage,
+#                        grunty_max_damage],
+#             "Horrty": [horrty_hitpoints, horrty_min_damage,
+#                        horrty_max_damage]}
+
+gobelins = [["Stinky", stinky_hitpoints, stinky_min_damage,
+             stinky_max_damage],
+            ["Grunty", grunty_hitpoints, grunty_min_damage,
+             grunty_max_damage],
+            ["Horrty", horrty_hitpoints, horrty_min_damage,
+             horrty_max_damage]]
+
 
 combatround = 0  # le mot "round" est un mot-cle reserve a Python
 
@@ -61,29 +69,43 @@ def damage_by(gobelin):
     '''
     Return random damage between min and max damage for a given Gobelin
     '''
-    return random.randint(gobelins[gobelin][1], gobelins[gobelin][2])
+    # return random.randint(gobelins[gobelin][1], gobelins[gobelin][2])
+    return random.randint(gobelin[2], gobelin[3])
+
+# def handle_hitpoints(gobelin_hit, gobelin):
 
 
-def handle_hitpoints(gobelin_hit, gobelin):
+def handle_hitpoints(gobelins, gobelin, gobelin_hit):
     '''
     Module to adjust hitpoints of the gobelin_hit by gobelin.
 
     Since life cannot be negative, adjust to zero if result is negative.
     '''
     damage = damage_by(gobelin)
-    gobelins[gobelin_hit][0] -= damage
+    # gobelins[gobelin_hit][0] -= damage
+    gobelins[gobelin_hit][1] -= damage
 
-    if gobelins[gobelin_hit][0] < 0:
-        gobelins[gobelin_hit][0] = 0
+    # if gobelins[gobelin_hit][0] < 0:
+    #     gobelins[gobelin_hit][0] = 0
+    if gobelins[gobelin_hit][1] < 0:
+        gobelins[gobelin_hit][1] = 0
 
+    # print("{0} hits {1} for {2} damage. {1} has {3} hp left.".
+    #       format(gobelin, gobelin_hit, damage, gobelins[gobelin_hit][0]))
     print("{0} hits {1} for {2} damage. {1} has {3} hp left.".
-          format(gobelin, gobelin_hit, damage, gobelins[gobelin_hit][0]))
+          format(gobelin[0], gobelins[gobelin_hit][0], damage,
+                 gobelins[gobelin_hit][1]))
+
+    if gobelins[gobelin_hit][1] == 0:
+        print("{0} falls in combat after {1} rounds".
+              format(gobelins[gobelin_hit][0], combatround))
+        gobelins.remove(gobelins[gobelin_hit])
 
 
-# def random_gobelin_hit(gobelins, gobelin):
-def random_gobelin_hit(gobelins_left, gobelin):
+def random_gobelin_hit(gobelins, gobelin):
+    # def random_gobelin_hit(gobelins_left, gobelin):
     """
-    Return a random gobelin name who's hit by gobelin.
+    Return a random gobelin name/indice who's hit by gobelin i.
 
     It is assumed gobelin will not hit itself.
 
@@ -95,7 +117,9 @@ def random_gobelin_hit(gobelins_left, gobelin):
     # gobelin_to_hit = gobelins_left
     # gobelin_to_hit is gobelins_left
     # Returns True and mess everything's up...
-    gobelin_to_hit = list(gobelins_left)
+
+    # gobelin_to_hit = list(gobelins_left)
+    gobelin_to_hit = list(range(len(gobelins)))
     gobelin_to_hit.remove(gobelin)
     return random.choice(gobelin_to_hit)
 
@@ -103,38 +127,48 @@ def random_gobelin_hit(gobelins_left, gobelin):
 # START _____________________________________________________________________
 print(intro)
 
-# define hit gobelin name order list:
-gobelins_left = list(gobelins.keys())
-# shuffle who hits first and so on:
-random.shuffle(gobelins_left)
-# present init status of gobelins
-for gobelin in gobelins_left:
-    print("{0} has {1} hitpoints.".format(gobelin, gobelins[gobelin][0]))
+# # define hit gobelin name order list:
+# # we have to create a new list since dictionary does not handle ordering
+# gobelins_left = list(gobelins.keys())
+# # shuffle who hits first and so on:
+# random.shuffle(gobelins_left)
+# # present init status of gobelins
+# for gobelin in gobelins_left:
+#     print("{0} has {1} hitpoints.".format(gobelin, gobelins[gobelin][0]))
+
+random.shuffle(gobelins)
+for gobelin in gobelins:
+    print("{0} has {1} hitpoints.".format(gobelin[0], gobelin[1]))
 
 # MAIN LOOP _________________________________________________________________
-while len(gobelins_left) > 1:
+# while len(gobelins_left) > 1:
+while len(gobelins) > 1:
     combatround += 1
     print(" ----- combat round {0} -------".format(combatround))
 
-    for gobelin in gobelins_left:
+    # for gobelin in gobelins_left:
+    for i, gobelin in enumerate(gobelins):
 
-        gobelin_hit = random_gobelin_hit(gobelins_left, gobelin)
+        # gobelin_hit = random_gobelin_hit(gobelins_left, gobelin)
+        gobelin_hit = random_gobelin_hit(gobelins, i)
+        # handle_hitpoints(gobelin_hit, gobelin)
+        handle_hitpoints(gobelins, gobelin, gobelin_hit)
 
-        handle_hitpoints(gobelin_hit, gobelin)
-
-        if gobelins[gobelin_hit][0] == 0:
-            # update list to avoid fallen gobelin to hit anyone :)
-            gobelins_left.remove(gobelin_hit)
-            print("{0} falls in combat after {1} rounds".
-                  format(gobelin_hit, combatround))
+        # if gobelins[gobelin_hit][0] == 0:
+        #     # update list to avoid fallen gobelin to hit anyone :)
+        #     gobelins_left.remove(gobelin_hit)
+        #     print("{0} falls in combat after {1} rounds".
+        #           format(gobelin_hit, combatround))
 
 # END GAME __________________________________________________________________
 print("==================================")
 print("The combat ends after %i rounds" % combatround)
+#
+# for gobelin in gobelins:
+#     if gobelins[gobelin][0] > 0:
+#         print(gobelin + " is the winner !"
 
-for gobelin in gobelins:
-    if gobelins[gobelin][0] > 0:
-        print(gobelin + " is the winner !")
+print(gobelins[0][0] + " is the winner !")
 
 # Below some tests:
 # gobelins.values()

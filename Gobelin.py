@@ -15,23 +15,24 @@ from collections import Counter
 
 intro = """
 ---- Introduction -------
-Trois gobelins, Grunty, Stinky, et Horrty jouent au jeu revisité
+Trois gobelins, Grunty, Stinky, et Horrty jouent au jeu (ici revisité)
 du combat au Dé Gobelin.
 
 Les règles sont très simples. Chaque gobelin lance un dé, et est
-autorisé à frapper un autre gobelin sur la tête avec un gourdin
-autant de fois que le nombre de points sur son dé l'indique. Ça
-s'appelle un dégât.
+autorisé à frapper avec un gourdin sur la tête d'un autre gobelin,
+choisi au hasard, autant de fois que le nombre de points sur son
+dé l'indique. Ça s'appelle un dégât.
 
 Chaque gobelin ayant un nombre de points de vie (combien de dégats il
 peut encaisser) le dernier gobelin debout sera le vainqueur.
 
 Notez qu'un dé dans une grotte de gobelins est fabriqué en os, et n'a pas
 six faces comme le dé que vous pourriez connaître.
-Chaque dé a une valeur minimale (nombre de points) et maximale.
+Chaque dé a une valeur minimale (nombre de points) et maximale, propre
+a chaque gobelin.
 
-Ce jeu n'est jamais vraiment devenu populaire en dehors des sociétés dans
-les grottes gobelines, il se pourrait même que ce soit la raison principale
+Ce jeu n'est jamais vraiment devenu populaire en dehors des sociétés des
+grottes gobelines, il se pourrait même que ce soit la raison principale
 de l'extinction des gobelins.\n"""
 
 
@@ -149,3 +150,11 @@ plt.xticks(range(len(victories)), victories.keys())
 plt.show()
 
 # we see that Grunty is obviouly the majority of time the winner.
+
+
+# given a gobelin population, which gobelin characteristic will win the most
+# and which one will loose the most?
+#
+# generating random gobelins:
+
+# how can the population would mutate towards the most frequent winner?

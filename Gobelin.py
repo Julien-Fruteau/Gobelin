@@ -32,31 +32,7 @@ les grottes gobelines, il se pourrait même que ce soit la raison principale
 de l'extinction des gobelins.\n"""
 
 
-# définition de Grunty et Stinky. Notez que les variables sont en minuscules
-stinky_hitpoints = 50  # Stinky est faible
-grunty_hitpoints = 60  # Grunty est fort
-horrty_hitpoints = 40
-
-stinky_min_damage = 3  # Stinky fait de meilleurs degats au minimum
-stinky_max_damage = 5  # mais pas beaucoup de degats au maximum
-
-grunty_min_damage = 1  # Grunty fait tres peu de degats au minimum
-grunty_max_damage = 6  # mais plus de degats au maximum
-
-horrty_min_damage = 2
-horrty_max_damage = 5
-
-gobelins = [["Stinky", stinky_hitpoints, stinky_min_damage,
-             stinky_max_damage],
-            ["Grunty", grunty_hitpoints, grunty_min_damage,
-             grunty_max_damage],
-            ["Horrty", horrty_hitpoints, horrty_min_damage,
-             horrty_max_damage]]
-
-
-combatround = 0  # le mot "round" est un mot-cle reserve a Python
-
-
+# FUNCTIONS _________________________________________________________________
 def damage_by(gobelin):
     '''
     Return random damage between min and max damage for a given Gobelin
@@ -99,7 +75,34 @@ def random_gobelin_hit(gobelins, gobelin):
     return random.choice(gobelin_to_hit)
 
 
-# START _____________________________________________________________________
+# GLOBALS ___________________________________________________________________
+# définition de Grunty et Stinky. Notez que les variables sont en minuscules
+stinky_hitpoints = 50  # Stinky est faible
+grunty_hitpoints = 60  # Grunty est fort
+horrty_hitpoints = 40
+
+stinky_min_damage = 3  # Stinky fait de meilleurs degats au minimum
+stinky_max_damage = 5  # mais pas beaucoup de degats au maximum
+
+grunty_min_damage = 1  # Grunty fait tres peu de degats au minimum
+grunty_max_damage = 6  # mais plus de degats au maximum
+
+horrty_min_damage = 2
+horrty_max_damage = 5
+
+# VARIABLES _________________________________________________________________
+gobelins = [["Stinky", stinky_hitpoints, stinky_min_damage,
+             stinky_max_damage],
+            ["Grunty", grunty_hitpoints, grunty_min_damage,
+             grunty_max_damage],
+            ["Horrty", horrty_hitpoints, horrty_min_damage,
+             horrty_max_damage]]
+
+
+combatround = 0  # le mot "round" est un mot-cle reserve a Python
+
+
+# INIT GAME _________________________________________________________________
 print(intro)
 
 random.shuffle(gobelins)

@@ -37,6 +37,14 @@ de l'extinction des gobelins.\n"""
 
 
 # FUNCTIONS _________________________________________________________________
+def create_gobelin(name):
+    gobelin = [name,
+               random.choice(range(min_hitpoints, max_hitpoints)),
+               random.choice(range(min_damage_min, max_damage_min)),
+               random.choice(range(min_damage_max, max_damage_max))]
+    return gobelin
+
+
 def damage_by(gobelin):
     '''
     Return random damage between min and max damage for a given Gobelin
@@ -93,6 +101,10 @@ def run_game(comments=False):
                 ["Horrty", horrty_hitpoints, horrty_min_damage,
                  horrty_max_damage]]
 
+    gobelins.append(create_gobelin("Randty"))
+
+    # gobelins = [create_gobelin(name) for name in gobelins_name]
+
     combatround = 0  # le mot "round" est un mot-cle reserve a Python
 
     # INIT GAME _____________________________________________________________
@@ -122,7 +134,7 @@ def run_game(comments=False):
 
 
 # GLOBALS ___________________________________________________________________
-# définition de Grunty et Stinky. Notez que les variables sont en minuscules
+# # définition de Grunty et Stinky. Notez que les variables sont en minuscules
 stinky_hitpoints = 50  # Stinky est faible
 grunty_hitpoints = 60  # Grunty est fort
 horrty_hitpoints = 40
@@ -135,6 +147,19 @@ grunty_max_damage = 6  # mais plus de degats au maximum
 
 horrty_min_damage = 2
 horrty_max_damage = 5
+
+# Gobelin Population characteristics:
+min_hitpoints = 1
+max_hitpoints = 101
+
+min_damage_min = 1
+max_damage_min = 5
+
+min_damage_max = 5
+max_damage_max = 9
+
+# gobelins_name = ["Grunty", "Stinky", "Horrty"]
+
 
 # ANALYSIS __________________________________________________________________
 victories = []  # gobelins victories frequency
@@ -155,6 +180,11 @@ plt.show()
 # given a gobelin population, which gobelin characteristic will win the most
 # and which one will loose the most?
 #
-# generating random gobelins:
+# 1st define a gobelin population:
+#   How many individuals: 100, 1000, 10000?
+#   Stick this as given popululation (export data to file than read file)
+# 2ns generate a SINGLE random gobelin:
+#   which carac makes it win over the other gobelins?
+
 
 # how can the population would mutate towards the most frequent winner?

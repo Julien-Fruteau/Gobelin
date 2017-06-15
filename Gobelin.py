@@ -8,6 +8,9 @@
 #       licence: gpl, see http://www.gnu.org/licenses/gpl-3.0.txt
 
 import random
+import matplotlib.pyplot as plt
+# import numpy as np
+from collections import Counter
 
 
 intro = """
@@ -16,7 +19,7 @@ Trois gobelins, Grunty, Stinky, et Horrty jouent au jeu revisité
 du combat au Dé Gobelin.
 
 Les règles sont très simples. Chaque gobelin lance un dé, et est
-autorisé à frapper un autre gobelin sur la t’ête avec un gourdin
+autorisé à frapper un autre gobelin sur la tête avec un gourdin
 autant de fois que le nombre de points sur son dé l'indique. Ça
 s'appelle un dégât.
 
@@ -40,30 +43,6 @@ def damage_by(gobelin):
     return random.randint(gobelin[2], gobelin[3])
 
 
-def handle_hitpoints(gobelins, gobelin, gobelin_hit):
-    '''
-    Module to adjust hitpoints of the gobelin_hit by gobelin.
-
-    Since life cannot be negative, adjust to zero if result is negative.
-
-    If gbelin down, remove it from gobelins
-    '''
-    damage = damage_by(gobelin)
-    gobelins[gobelin_hit][1] -= damage
-
-    if gobelins[gobelin_hit][1] < 0:
-        gobelins[gobelin_hit][1] = 0
-
-    print("{0} hits {1} for {2} damage. {1} has {3} hp left.".
-          format(gobelin[0], gobelins[gobelin_hit][0], damage,
-                 gobelins[gobelin_hit][1]))
-
-    if gobelins[gobelin_hit][1] == 0:
-        print("{0} falls in combat after {1} rounds".
-              format(gobelins[gobelin_hit][0], combatround))
-        gobelins.remove(gobelins[gobelin_hit])
-
-
 def random_gobelin_hit(gobelins, gobelin):
     """
     Return the index of a random gobelin who's hit by gobelin.
@@ -73,6 +52,72 @@ def random_gobelin_hit(gobelins, gobelin):
     gobelin_to_hit = list(range(len(gobelins)))
     gobelin_to_hit.remove(gobelin)
     return random.choice(gobelin_to_hit)
+
+
+def handle_hitpoints(gobelins, gobelin, gobelin_hit, comments):
+    '''
+    Module to adjust hitpoints of the gobelin_hit by gobelin.
+
+    Since life cannot be negative, adjust to zero if result is negative.
+
+    If gobelin down, remove it from gobelins
+    '''
+    damage = damage_by(gobelin)
+    gobelins[gobelin_hit][1] -= damage
+
+    if gobelins[gobelin_hit][1] < 0:
+        gobelins[gobelin_hit][1] = 0
+
+    if comments:
+        print("{0} hits {1} for {2} damage. {1} has {3} hp left.".
+              format(gobelin[0], gobelins[gobelin_hit][0], damage,
+                     gobelins[gobelin_hit][1]))
+
+    if gobelins[gobelin_hit][1] == 0:
+        if comments:
+            print("{0} falls in combat after {1} rounds".
+                  format(gobelins[gobelin_hit][0], combatround))
+        gobelins.remove(gobelins[gobelin_hit])
+
+
+def run_game(comments=False):
+    '''
+    Return the winner and number of combatround
+    '''
+    # VARIABLES _____________________________________________________________
+    gobelins = [["Stinky", stinky_hitpoints, stinky_min_damage,
+                 stinky_max_damage],
+                ["Grunty", grunty_hitpoints, grunty_min_damage,
+                 grunty_max_damage],
+                ["Horrty", horrty_hitpoints, horrty_min_damage,
+                 horrty_max_damage]]
+
+    combatround = 0  # le mot "round" est un mot-cle reserve a Python
+
+    # INIT GAME _____________________________________________________________
+    random.shuffle(gobelins)
+    if comments:
+        print(intro)
+        for gobelin in gobelins:
+            print("{0} has {1} hitpoints.".format(gobelin[0], gobelin[1]))
+
+    # MAIN LOOP _____________________________________________________________
+    while len(gobelins) > 1:
+        combatround += 1
+        if comments:
+            print(" ----- combat round {0} -------".format(combatround))
+
+        for i, gobelin in enumerate(gobelins):
+
+            gobelin_hit = random_gobelin_hit(gobelins, i)
+
+            handle_hitpoints(gobelins, gobelin, gobelin_hit, comments)
+    # END GAME ______________________________________________________________
+    if comments:
+        print("==================================")
+        print("The combat ends after %i rounds" % combatround)
+        print(gobelins[0][0] + " is the winner !")
+    return(gobelins[0][0], combatround)
 
 
 # GLOBALS ___________________________________________________________________
@@ -90,36 +135,17 @@ grunty_max_damage = 6  # mais plus de degats au maximum
 horrty_min_damage = 2
 horrty_max_damage = 5
 
-# VARIABLES _________________________________________________________________
-gobelins = [["Stinky", stinky_hitpoints, stinky_min_damage,
-             stinky_max_damage],
-            ["Grunty", grunty_hitpoints, grunty_min_damage,
-             grunty_max_damage],
-            ["Horrty", horrty_hitpoints, horrty_min_damage,
-             horrty_max_damage]]
+# ANALYSIS __________________________________________________________________
+victories = []  # gobelins victories frequency
 
+for rep in range(10000):
+    (winner, combatround) = run_game()
+    victories.append(winner)
 
-combatround = 0  # le mot "round" est un mot-cle reserve a Python
+# shows the frequency of wins for each gobelin
+victories = Counter(victories)
+plt.bar(range(len(victories)), victories.values())
+plt.xticks(range(len(victories)), victories.keys())
+plt.show()
 
-
-# INIT GAME _________________________________________________________________
-print(intro)
-
-random.shuffle(gobelins)
-for gobelin in gobelins:
-    print("{0} has {1} hitpoints.".format(gobelin[0], gobelin[1]))
-
-# MAIN LOOP _________________________________________________________________
-while len(gobelins) > 1:
-    combatround += 1
-    print(" ----- combat round {0} -------".format(combatround))
-
-    for i, gobelin in enumerate(gobelins):
-
-        gobelin_hit = random_gobelin_hit(gobelins, i)
-
-        handle_hitpoints(gobelins, gobelin, gobelin_hit)
-# END GAME __________________________________________________________________
-print("==================================")
-print("The combat ends after %i rounds" % combatround)
-print(gobelins[0][0] + " is the winner !")
+# we see that Grunty is obviouly the majority of time the winner.

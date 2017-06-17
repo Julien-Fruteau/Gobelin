@@ -11,6 +11,8 @@ import random
 import matplotlib.pyplot as plt
 # import numpy as np
 from collections import Counter
+import pandas as pd
+# import scipy.stats as ss
 
 
 intro = """
@@ -38,10 +40,16 @@ de l'extinction des gobelins.\n"""
 
 # FUNCTIONS _________________________________________________________________
 def create_gobelin(name):
+    '''
+    Return a list with gobelin name, hitpoints which will evolve in combat,
+    min_damage, max_damage, initial hitpoints for later analysis
+    '''
+    hp = random.choice(range(min_hitpoints, max_hitpoints))
     gobelin = [name,
-               random.choice(range(min_hitpoints, max_hitpoints)),
+               hp,
                random.choice(range(min_damage_min, max_damage_min)),
-               random.choice(range(min_damage_max, max_damage_max))]
+               random.choice(range(min_damage_max, max_damage_max)),
+               hp]
     return gobelin
 
 
@@ -94,12 +102,13 @@ def run_game(comments=False):
     Return the winner and number of combatround
     '''
     # VARIABLES _____________________________________________________________
+
     gobelins = [["Stinky", stinky_hitpoints, stinky_min_damage,
-                 stinky_max_damage],
+                 stinky_max_damage, stinky_hitpoints],
                 ["Grunty", grunty_hitpoints, grunty_min_damage,
-                 grunty_max_damage],
+                 grunty_max_damage, grunty_hitpoints],
                 ["Horrty", horrty_hitpoints, horrty_min_damage,
-                 horrty_max_damage]]
+                 horrty_max_damage, horrty_hitpoints]]
 
     gobelins.append(create_gobelin("Randty"))
 
@@ -130,7 +139,8 @@ def run_game(comments=False):
         print("==================================")
         print("The combat ends after %i rounds" % combatround)
         print(gobelins[0][0] + " is the winner !")
-    return(gobelins[0][0], combatround)
+    return(gobelins[0][0], gobelins[0][4],
+           gobelins[0][2], gobelins[0][3], combatround)
 
 
 # GLOBALS ___________________________________________________________________
@@ -162,29 +172,33 @@ max_damage_max = 9
 
 
 # ANALYSIS __________________________________________________________________
-victories = []  # gobelins victories frequency
+victories = pd.DataFrame(
+    columns=("winner", "hp", "min_dam", "max_dam", "combatround"))
 
-for rep in range(10000):
-    (winner, combatround) = run_game()
-    victories.append(winner)
+for rep in range(10):
+    # (winner, hp, min_dam, max_dam, combatround) = run_game()
+    victories.loc[rep + 1] = run_game()
+
+
+randty_wins = victories[victories.winner == "Randty"]
 
 # shows the frequency of wins for each gobelin
-victories = Counter(victories)
-plt.bar(range(len(victories)), victories.values())
-plt.xticks(range(len(victories)), victories.keys())
+win_freq = Counter(victories.winner)
+plt.bar(range(len(win_freq)), win_freq.values())
+plt.xticks(range(len(win_freq)), win_freq.keys())
 plt.show()
 
-# we see that Grunty is obviouly the majority of time the winner.
-
+# Rules:
+# How many gobelins fight? 4, given 3 gobelins and a random gobelin at each
+# game iteration.
 
 # given a gobelin population, which gobelin characteristic will win the most
 # and which one will loose the most?
-#
-# 1st define a gobelin population:
-#   How many individuals: 100, 1000, 10000?
-#   Stick this as given popululation (export data to file than read file)
-# 2ns generate a SINGLE random gobelin:
-#   which carac makes it win over the other gobelins?
+
+# it is obvious that a gobelin having 100 hp and [4-8] damages will
+# win the most.
+# hence to deinie a population, we can sample from a normal distribution
+# with mean the average of min-max hp/damage_min/damage_max:
 
 
 # how can the population would mutate towards the most frequent winner?
